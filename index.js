@@ -20,10 +20,12 @@ async function createConnection(){
 }
 const client = await createConnection();
 
+//home
 app.get('/', function (request, response) {
     response.send("Hello");
 });
 
+//find all
 app.get("/list", async function (request, response) {
 
     const list = await client
@@ -35,6 +37,7 @@ app.get("/list", async function (request, response) {
     response.send(list);
 });
 
+//find one
 app.get("/list/:id", async function (request,response) {
     const {id} = request.params;
     console.log(request.params,id);
@@ -49,6 +52,7 @@ app.get("/list/:id", async function (request,response) {
         : response.status(404).send({ msg: "Movie not found" });
 });
 
+//insert
 app.post("/list",async function (request, response) {
     const data = request.body;
     console.log(data);
@@ -61,6 +65,7 @@ app.post("/list",async function (request, response) {
     response.send(result);
 });
 
+//delete
 app.delete("/list/:id", async function (request,response) {
     const {id} = request.params;
     console.log(request.params,id);
@@ -73,6 +78,20 @@ app.delete("/list/:id", async function (request,response) {
     result.deletedCount > 0
         ? response.send({ msg: "List deleted successfully" }) 
         : response.status(404).send({ msg: "Movie not found" });
+});
+
+//update
+app.put("/list/:id", async function (request,response) {
+    const {id} = request.params;
+    console.log(request.params,id);
+    const data = request.body;
+
+    const result = await client
+        .db("crmdata")
+        .collection("sample")
+        .updateOne({id: id}, { $set: data });
+
+    response.send(result);
 });
 
 app.listen(PORT,()=> console.log(`App started in ${PORT}`));
