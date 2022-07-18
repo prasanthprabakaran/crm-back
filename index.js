@@ -47,7 +47,7 @@ app.get("/list/:id", async function (request,response) {
     list 
         ? response.send(list) 
         : response.status(404).send({ msg: "Movie not found" });
-})
+});
 
 app.post("/list",async function (request, response) {
     const data = request.body;
@@ -59,6 +59,20 @@ app.post("/list",async function (request, response) {
         .collection("sample")
         .insertMany(data);
     response.send(result);
+});
+
+app.delete("/list/:id", async function (request,response) {
+    const {id} = request.params;
+    console.log(request.params,id);
+
+    const result = await client
+        .db("crmdata")
+        .collection("sample")
+        .deleteOne({id: id});
+    // console.log(list);
+    result.deletedCount > 0
+        ? response.send({ msg: "List deleted successfully" }) 
+        : response.status(404).send({ msg: "Movie not found" });
 });
 
 app.listen(PORT,()=> console.log(`App started in ${PORT}`));
