@@ -1,4 +1,5 @@
 import express from "express";
+import {auth} from '../middleware/auth.js'
 import { 
     getAllMovies,
     createMovies,
@@ -7,14 +8,14 @@ import {
     getMovieById} from "./helper.js";
 const router = express.Router();
 //find all
-router.get("/", async function (request, response) {
+router.get("/", auth ,async function (request, response) {
 
     const list = await getAllMovies(request);
     response.send(list);
 });
 
 //find one
-router.get("/:id", async function (request,response) {
+router.get("/:id",auth , async function (request,response) {
     const {id} = request.params;
     console.log(request.params,id);
 
@@ -30,16 +31,16 @@ router.post("/",async function (request, response) {
     console.log(data);
     // db.list.insertMany(data)
 
-    const result = createMovies(data);
+    const result = await createMovies(data);
     response.send(result);
 });
 
 //delete
-router.delete("/:id", async function (request,response) {
+router.delete("/:id",auth , async function (request,response) {
     const {id} = request.params;
     console.log(request.params,id);
 
-    const result = deleteMovieById(id);
+    const result = await deleteMovieById(id);
     result.deletedCount > 0
         ? response.send({ msg: "List deleted successfully" }) 
         : response.status(404).send({ msg: "Movie not found" });
